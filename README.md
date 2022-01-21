@@ -14,9 +14,8 @@ wkhtmltopdf is installed from https://wkhtmltopdf.org/downloads.html
 
 install requirements with pip
 
-get the link of tutorial you want to download from javatpoint
+get the link of the tutorial you want to download from javatpoint
 
 ```
 python script.py
 ```
-
