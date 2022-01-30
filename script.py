@@ -2,24 +2,20 @@ import pdfkit
 from bs4 import BeautifulSoup
 import requests
 
-url = "https://www.javatpoint.com/regex"
-name = "regex.pdf"
+urls = ["https://www.javatpoint.com/iot-internet-of-things","https://www.javatpoint.com/graphql"]
+
+
 fo = open("temp.html", "w")
-
-
 class getPage:
     def __init__(self, urlString):
         super(getPage, self).__init__()
         self.initURL = urlString
-
-    headString = """
-	<head>
-	<base href="http://www.javatpoint.com/" target="_blank" />
-	</head>
-	"""
     baseURL = """http://www.javatpoint.com/"""
-    fo.write(headString)
-
+    headString = """
+        <head>
+        <base href="http://www.javatpoint.com/" target="_blank" />
+        </head>
+        """
     def fetchHTML(self, url):
         try:
             HTML = requests.get(url)
@@ -31,14 +27,18 @@ class getPage:
             return soup
 
     def cleanDivCity(self, div):
-        for i in div.find_all("fieldset"):
-            i.decompose()
-        for i in div.select(".next"):
-            i.decompose()
-        for i in div.select(".nexttopicdiv"):
-            i.decompose()
-        # print("div Tree Cleaned")
-        return div
+        try:
+            for i in div.find_all("fieldset"):
+                i.decompose()
+            for i in div.select(".next"):
+                i.decompose()
+            for i in div.select(".nexttopicdiv"):
+                i.decompose()
+            return div
+        except:
+            print("Error in cleaning div Tree")
+            return div
+
 
     def getDivCity(self, soup):
         div = soup.find(id="city")
@@ -61,6 +61,7 @@ class getPage:
             return urls
 
     def init(self):
+        fo.write(self.headString)
         urls = self.fetchUrlList(self.initURL)
         n = len(urls)
         for idx, val in enumerate(urls):
@@ -73,9 +74,6 @@ class getPage:
         print("All Pages Written")
 
 
-p = getPage(url)
-p.init()
-fo.close()
 options = {
     "page-size": "Letter",
     "margin-top": "0.75in",
@@ -87,13 +85,13 @@ options = {
 }
 
 cssFile = "link.css"
-pdfkit.from_file("temp.html", name, options=options, css=cssFile)
-print("PDF Successfully Generated.")
+for url in urls:
+    fo.truncate(0)
+    p = getPage(url)
+    url_part = url.split("/")[-1]+".pdf"
+    p.init()
+    pdfkit.from_file("temp.html", url_part, options=options, css=cssFile)
+    print("PDF Successfully Generated.")
 
-
-# Alternate Selection Conditions
-# dict = {
-# "style":"float:right",
-# "class":"next"
-# }
-# relativeURL = div.select(".nexttopicdiv > span > a")[0]['href']
+fo.close()
+print("All PDF Successfully Generated.")
